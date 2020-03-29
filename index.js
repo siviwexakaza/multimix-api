@@ -4,6 +4,10 @@ let io = require('socket.io')(server);
 let {join, getUser, leaveRoom, getRoomUsers} = require('./utils/user');
 let createMessage = require('./utils/message');
 let bot = 'Multimix';
+
+let cors = require('cors');
+app.use(cors());
+
  
 io.on('connection', (socket) => {
 
@@ -22,8 +26,6 @@ io.on('connection', (socket) => {
 
 
     });
- 
-  
  
     socket.on('client-message', msg => {
         const user = getUser(socket.id);
@@ -54,5 +56,5 @@ io.on('connection', (socket) => {
 var port = process.env.PORT || 3001;
  
 server.listen(port, function(){
-   console.log('listening in http://localhost:' + port);
+   console.log('server started on port' + port);
 });
