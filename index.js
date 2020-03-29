@@ -18,10 +18,10 @@ io.on('connection', (socket) => {
 
         //Sending user info to client for local storage if needed
         socket.emit('welcome', socket);
-        
+
 
         socket.broadcast.to(user.roomName)
-        .emit('server-message', createMessage(bot,`${user.displayName} has joined.`));
+        .emit('server-message', createMessage(bot,`${user.displayName} has joined.`,''));
 
         io.to(user.roomName).emit('roomUsers', {
             room: user.roomName,
@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
     socket.on('client-message', msg => {
         const user = getUser(socket.id);
     
-        io.to(user.roomName).emit('server-message', createMessage(user.username, msg));
+        io.to(user.roomName).emit('server-message', createMessage(user.displayName, msg, user.socketId));
       });
 
 
@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
         if (user) {
           io.to(user.roomName).emit(
             'server-message',
-            createMessage(bot, `${user.displayName} has left`)
+            createMessage(bot, `${user.displayName} has left`,'')
           );
     
           
