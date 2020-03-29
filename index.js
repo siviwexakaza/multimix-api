@@ -16,6 +16,10 @@ io.on('connection', (socket) => {
         let user = join(socket.id, displayName, roomName);
         socket.join(roomName);
 
+        //Sending user info to client for local storage if needed
+        socket.emit('welcome', socket);
+        
+
         socket.broadcast.to(user.roomName)
         .emit('server-message', createMessage(bot,`${user.displayName} has joined.`));
 
