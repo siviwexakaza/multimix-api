@@ -1,7 +1,7 @@
 let app = require('express')();
 let server = require('http').createServer(app);
 let io = require('socket.io')(server);
-let {join, getUser} = require('./utils/user');
+let {join, getUser, leaveRoom, getRoomUsers} = require('./utils/user');
 let createMessage = require('./utils/message');
 let bot = 'Multimix';
  
@@ -15,6 +15,10 @@ io.on('connection', (socket) => {
         socket.broadcast.to(user.roomName)
         .emit('server-message', createMessage(bot,`${user.displayName} has joined.`));
 
+        io.to(user.roomName).emit('roomUsers', {
+            room: user.roomName,
+            users: getRoomUsers(user.roomName)
+        });
 
 
     });
@@ -24,23 +28,23 @@ io.on('connection', (socket) => {
     socket.on('client-message', msg => {
         const user = getUser(socket.id);
     
-        io.to(user.room).emit('server-message', createMessage(user.username, msg));
+        io.to(user.roomName).emit('server-message', createMessage(user.username, msg));
       });
 
 
       socket.on('disconnect', () => {
-        const user = userLeave(socket.id);
+        const user = leaveRoom(socket.id);
     
         if (user) {
-          io.to(user.room).emit(
+          io.to(user.roomName).emit(
             'server-message',
             createMessage(bot, `${user.displayName} has left`)
           );
     
           
-          io.to(user.room).emit('roomUsers', {
-            room: user.room,
-            users: getRoomUsers(user.room)
+          io.to(user.roomName).emit('roomUsers', {
+            room: user.roomName,
+            users: getRoomUsers(user.roomName)
           });
         }
       });

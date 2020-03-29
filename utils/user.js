@@ -11,4 +11,17 @@ function getUser(socketId){
     return users.find(user => user.socketId == socketId);
 }
 
-module.exports = {join, getUser};
+function leaveRoom(id) {
+    const index = users.findIndex(user => user.socketId === id);
+  
+    if (index !== -1) {
+      return users.splice(index, 1)[0];
+    }
+}
+  
+  // Get room users
+function getRoomUsers(roomName) {
+    return users.filter(user => user.roomName === roomName);
+}
+
+module.exports = {join, getUser, leaveRoom, getRoomUsers};
